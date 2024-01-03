@@ -1,9 +1,16 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\User;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +33,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+
+    return Inertia::render('Dashboard', [
+        'users' => User::all()->map(function ($user) {
+            return ['name' => $user->name];
+        }),
+        'me' => Auth::user()->name
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -35,4 +48,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
+
+
+
+require __DIR__ . '/auth.php';
+require __DIR__ . '/oAuth.php';//for oauth 
